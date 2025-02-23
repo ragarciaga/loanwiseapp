@@ -4,7 +4,8 @@
 LoanWise is a machine learning project designed to predict **credit eligibility** using **advanced predictive models**. This project leverages **LightGBM, XGBoost, and Logistic Regression**, with LightGBM achieving the best results. The goal is to enhance the credit approval process by improving accuracy, recall, and overall decision-making efficiency.  
 
 ### 📂 Dataset  
-- **Source:** [Kaggle - Credit Card Capability Data](https://www.kaggle.com/datasets/zeesolver/credit-cared)  
+- **Original Source:** [Kaggle - Credit Card Capability Data](https://www.kaggle.com/datasets/zeesolver/credit-cared)
+- Several changes were made to adapt it to the local currency, the dataset used in this exercise is "credit_dataset_cop_null.csv" located in this repository.
 - **Size:** 9,609 instances with 18 features  
 - **Key Features:**  
   - **Demographics:** Gender, number of children, family size  
@@ -41,7 +42,7 @@ pip install numpy pandas matplotlib seaborn scikit-learn imbalanced-learn xgboos
 ### 📌 How to Use  
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/YOUR_USERNAME/loanwise.git
+   git clone https://github.com/ragarciaga/loanwise.git
    cd loanwise
    ```
 2. Run the **Jupyter Notebook** to explore the data and train models.  
@@ -57,5 +58,5 @@ This is a personal academic project, but **collaborators are welcome**! Feel fre
 This project is open-source under the **MIT License**.  
 
 ### 📬 Contact  
-- **GitHub:** [Your GitHub Profile](#)  
-- **LinkedIn:** [Your LinkedIn Profile](#)  
+- **GitHub:** [https://github.com/ragarciaga](#)  
+- **LinkedIn:** [https://www.linkedin.com/in/ragarciaga/](#)  
