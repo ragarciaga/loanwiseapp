@@ -22,17 +22,16 @@ with open("column_order.pkl", "rb") as f:
 
 from fastapi.middleware.cors import CORSMiddleware
 
-# Initialize the API
+# Inicializar FastAPI
 app = FastAPI()
 
-# Configure CORS to allow requests from the frontend
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://caribbeanspice.musicpro.online/loanwise"],  # Puedes cambiar "*" por la URL específica de tu WordPress
+    allow_origins=["https://caribbeanspice.musicpro.online"],  
     allow_credentials=True,
-    allow_methods=["*"],  # Permite todos los métodos (GET, POST, OPTIONS, etc.)
-    allow_headers=["*"],  # Permite todos los encabezados
-)
+    allow_methods=["*"],  
+    allow_headers=["*"],  
 
 # Define input schema for JSON
 class InputData(BaseModel):
