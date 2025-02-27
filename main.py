@@ -54,12 +54,17 @@ def preprocess(data: pd.DataFrame) -> pd.DataFrame:
     - Normalize numerical variables using the pre-trained MinMaxScaler
     - Ensure column order matches the model training data
     """
-    binary_cols = ['Gender', 'Own_car', 'Own_property', 'Work_phone', 'Phone', 'Email', 'Unemployed']
+    binary_cols = ['Gender', 'Own_car', 'Own_property', 'Work_phone', 'Phone', 'Email', 'Unemployed', 'Num_children', 'Num_family']
     categorical_cols = ['Income_type', 'Education_type', 'Family_status', 'Housing_type', 'Occupation_type']
     numeric_cols = ['Total_income', 'Age', 'Years_employed', 'Account_length']
     
     # Convert input data to DataFrame
     data = pd.DataFrame([data]) if isinstance(data, dict) else data
+    
+    # Ensure all categorical values exist before transformation
+    for col in categorical_cols:
+        if col not in data.columns:
+            data[col] = "Unknown"
     
     # One-Hot Encoding using the pre-trained encoder
     encoded_cols = pd.DataFrame(encoder.transform(data[categorical_cols]))
@@ -76,6 +81,9 @@ def preprocess(data: pd.DataFrame) -> pd.DataFrame:
     data[numeric_cols] = scaler.transform(data[numeric_cols])
     
     # Ensure column order matches model expectations
+    for col in column_order:
+        if col not in data.columns:
+            data[col] = 0  # Add missing columns with default value 0
     data = data[column_order]
     
     return data
