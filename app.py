@@ -40,7 +40,13 @@ def predict():
         # Ensure correct column order
         df = df[expected_columns]
 
-        # Debugging: Print the columns received by the API
+        # Save logs to a file in Render
+        with open("logs.txt", "w") as log_file:
+            log_file.write(f"🔹 Columns received in API: {df.columns.tolist()}\n")
+            log_file.write(f"🔹 Columns expected by model: {expected_columns}\n")
+            log_file.write(f"🔹 Total columns received: {len(df.columns)}\n")
+            log_file.write(f"🔹 Total columns expected: {len(expected_columns)}\n")
+
         print("🔹 Columns received in API:", df.columns.tolist())
         print("🔹 Columns expected by model:", expected_columns)
         print("🔹 Total columns received:", len(df.columns))
@@ -55,6 +61,8 @@ def predict():
     
     except Exception as e:
         print(f"❌ Error in /predict: {e}")
+        with open("logs.txt", "a") as log_file:
+            log_file.write(f"❌ Error in /predict: {e}\n")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
