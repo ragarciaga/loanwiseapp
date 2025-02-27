@@ -18,8 +18,8 @@ app = Flask(__name__)
 # 1) Load the trained model and scaler
 # ============================================================
 try:
-    modelo = joblib.load("/content/drive/MyDrive/Talento Tech AI/Entregable/final_model.pkl")
-    scaler = joblib.load("/content/drive/MyDrive/Talento Tech AI/Entregable/scaler.pkl")
+    modelo = joblib.load("modelo_final.pkl")
+    scaler = joblib.load("scaler.pkl")
     print("✅ Model and scaler loaded successfully")
 except Exception as e:
     print(f"❌ Error loading model or scaler: {e}")
