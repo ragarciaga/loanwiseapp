@@ -32,17 +32,19 @@ def predict():
         df = pd.get_dummies(df, columns=categorical_columns, drop_first=False)
         
         # Ensure all expected columns are present
-        missing_cols = set(scaler.feature_names_in_) - set(df.columns)
+        expected_columns = list(scaler.feature_names_in_)
+        missing_cols = set(expected_columns) - set(df.columns)
         for col in missing_cols:
             df[col] = 0  # Fill missing columns with 0
-
-        df = df[scaler.feature_names_in_]  # Arrange columns in the same order
+        
+        # Ensure correct column order
+        df = df[expected_columns]
 
         # Debugging: Print the columns received by the API
         print("🔹 Columns received in API:", df.columns.tolist())
-        print("🔹 Columns expected by model:", list(scaler.feature_names_in_))
+        print("🔹 Columns expected by model:", expected_columns)
         print("🔹 Total columns received:", len(df.columns))
-        print("🔹 Total columns expected:", len(scaler.feature_names_in_))
+        print("🔹 Total columns expected:", len(expected_columns))
 
         # Apply MinMax Scaling
         df[numerical_features] = scaler.transform(df[numerical_features])
