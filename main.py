@@ -10,6 +10,16 @@ from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 with open("model_experiment_9.pkl", "rb") as f:
     model = pickle.load(f)
 
+# Load the pre-trained encoder, scaler, and column order
+with open("encoder.pkl", "rb") as f:
+    encoder = pickle.load(f)
+
+with open("scaler.pkl", "rb") as f:
+    scaler = pickle.load(f)
+
+with open("column_order.pkl", "rb") as f:
+    column_order = pickle.load(f)
+
 # Initialize the API
 app = FastAPI()
 
@@ -38,16 +48,21 @@ class InputData(BaseModel):
 def preprocess(data: pd.DataFrame) -> pd.DataFrame:
     """
     Preprocess input data before making predictions:
-    - Apply One-Hot Encoding for categorical variables
+    - Keep binary columns as they are
+    - Apply One-Hot Encoding using the pre-trained encoder
     - Fill missing values with median
-    - Normalize numerical variables using MinMaxScaler
+    - Normalize numerical variables using the pre-trained MinMaxScaler
+    - Ensure column order matches the model training data
     """
+    binary_cols = ['Gender', 'Own_car', 'Own_property', 'Work_phone', 'Phone', 'Email', 'Unemployed']
     categorical_cols = ['Income_type', 'Education_type', 'Family_status', 'Housing_type', 'Occupation_type']
     numeric_cols = ['Total_income', 'Age', 'Years_employed', 'Account_length']
     
-    # One-Hot Encoding
-    encoder = OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore')
-    encoded_cols = pd.DataFrame(encoder.fit_transform(data[categorical_cols]))
+    # Convert input data to DataFrame
+    data = pd.DataFrame([data]) if isinstance(data, dict) else data
+    
+    # One-Hot Encoding using the pre-trained encoder
+    encoded_cols = pd.DataFrame(encoder.transform(data[categorical_cols]))
     encoded_cols.columns = encoder.get_feature_names_out(categorical_cols)
     encoded_cols.index = data.index
     
@@ -57,9 +72,11 @@ def preprocess(data: pd.DataFrame) -> pd.DataFrame:
     # Fill missing values with median
     data = data.fillna(data.median())
     
-    # Normalize numerical features
-    scaler = MinMaxScaler()
-    data[numeric_cols] = scaler.fit_transform(data[numeric_cols])
+    # Normalize numerical features using the pre-trained scaler
+    data[numeric_cols] = scaler.transform(data[numeric_cols])
+    
+    # Ensure column order matches model expectations
+    data = data[column_order]
     
     return data
 
