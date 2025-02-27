@@ -20,8 +20,19 @@ with open("scaler.pkl", "rb") as f:
 with open("column_order.pkl", "rb") as f:
     column_order = pickle.load(f)
 
+from fastapi.middleware.cors import CORSMiddleware
+
 # Initialize the API
 app = FastAPI()
+
+# Configure CORS to allow requests from the frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://caribbeanspice.musicpro.online/loanwise"],  # Puedes cambiar "*" por la URL específica de tu WordPress
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos los métodos (GET, POST, OPTIONS, etc.)
+    allow_headers=["*"],  # Permite todos los encabezados
+)
 
 # Define input schema for JSON
 class InputData(BaseModel):
