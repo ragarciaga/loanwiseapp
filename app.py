@@ -18,7 +18,7 @@ app = Flask(__name__)
 # 1) Load the trained model and scaler
 # ============================================================
 try:
-    modelo = joblib.load("modelo_final.pkl")
+    modelo = joblib.load("final_model.pkl")
     scaler = joblib.load("scaler.pkl")
     print("✅ Model and scaler loaded successfully")
 except Exception as e:
