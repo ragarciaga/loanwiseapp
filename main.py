@@ -89,15 +89,28 @@ def preprocess(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 # ✅ Endpoint para recibir datos JSON desde WordPress
-@app.post("/predict")
-def predict(data: InputData):
-    """Receive JSON input, preprocess it, and return a binary prediction."""
-    import json
-    print("📩 Datos recibidos desde Elementor:", json.dumps(data.dict(), indent=4))  # 🔍 LOG DE DEPURACIÓN
-    df = pd.DataFrame([data.dict()])
-    df = preprocess(df)
-    prediction = model.predict(df)
-    return {"prediction": int(prediction[0])}
+from fastapi.responses import FileResponse
+import os
+
+@app.post("/predict_csv")
+def predict_csv(file: UploadFile = File(...)):
+    """Receive CSV file, preprocess it, and return predictions as a downloadable CSV."""
+    contents = file.file.read()
+    df = pd.read_csv(io.StringIO(contents.decode("utf-8")))
+    df_processed = preprocess(df)
+
+    # Generar predicciones
+    predictions = model.predict(df_processed)
+    
+    # Agregar columna "Target" con las predicciones
+    df["Target"] = predictions
+
+    # Guardar en un archivo temporal
+    output_path = "predictions.csv"
+    df.to_csv(output_path, index=False)
+
+    return FileResponse(output_path, filename="predictions.csv", media_type="text/csv")
+
 
 
 # ✅ Endpoint para recibir archivos CSV desde WordPress
