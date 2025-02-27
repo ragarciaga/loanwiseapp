@@ -92,10 +92,13 @@ def preprocess(data: pd.DataFrame) -> pd.DataFrame:
 @app.post("/predict")
 def predict(data: InputData):
     """Receive JSON input, preprocess it, and return a binary prediction."""
+    import json
+    print("📩 Datos recibidos desde Elementor:", json.dumps(data.dict(), indent=4))  # 🔍 LOG DE DEPURACIÓN
     df = pd.DataFrame([data.dict()])
     df = preprocess(df)
     prediction = model.predict(df)
     return {"prediction": int(prediction[0])}
+
 
 # ✅ Endpoint para recibir archivos CSV desde WordPress
 @app.post("/predict_csv")
