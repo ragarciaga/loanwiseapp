@@ -4,6 +4,7 @@ import pickle
 import uvicorn
 from pydantic import BaseModel
 import io
+from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 
 # Load the trained model
 with open("model_experiment_9.pkl", "rb") as f:
@@ -35,14 +36,37 @@ class InputData(BaseModel):
 
 # Preprocessing function
 def preprocess(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Preprocess input data before making predictions:
+    - Apply One-Hot Encoding for categorical variables
+    - Fill missing values with median
+    - Normalize numerical variables using MinMaxScaler
+    """
     categorical_cols = ['Income_type', 'Education_type', 'Family_status', 'Housing_type', 'Occupation_type']
-    data = pd.get_dummies(data, columns=categorical_cols, drop_first=True)
-    data = data.fillna(data.median())  # Impute missing values with median
+    numeric_cols = ['Total_income', 'Age', 'Years_employed', 'Account_length']
+    
+    # One-Hot Encoding
+    encoder = OneHotEncoder(drop='first', sparse_output=False, handle_unknown='ignore')
+    encoded_cols = pd.DataFrame(encoder.fit_transform(data[categorical_cols]))
+    encoded_cols.columns = encoder.get_feature_names_out(categorical_cols)
+    encoded_cols.index = data.index
+    
+    # Drop original categorical columns and merge encoded ones
+    data = data.drop(columns=categorical_cols).join(encoded_cols)
+    
+    # Fill missing values with median
+    data = data.fillna(data.median())
+    
+    # Normalize numerical features
+    scaler = MinMaxScaler()
+    data[numeric_cols] = scaler.fit_transform(data[numeric_cols])
+    
     return data
 
 # Endpoint to receive data from a form
 @app.post("/predict")
 def predict(data: InputData):
+    """Receive JSON input, preprocess it, and return a binary prediction."""
     df = pd.DataFrame([data.dict()])
     df = preprocess(df)
     prediction = model.predict(df)
@@ -51,6 +75,7 @@ def predict(data: InputData):
 # Endpoint to receive a CSV file from WordPress
 @app.post("/predict_csv")
 def predict_csv(file: UploadFile = File(...)):
+    """Receive CSV file, preprocess it, and return predictions for each row."""
     contents = file.file.read()
     df = pd.read_csv(io.StringIO(contents.decode("utf-8")))
     df = preprocess(df)
