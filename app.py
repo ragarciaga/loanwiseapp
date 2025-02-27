@@ -46,11 +46,10 @@ def predict():
             log_file.write(f"🔹 Columns expected by model: {expected_columns}\n")
             log_file.write(f"🔹 Total columns received: {len(df.columns)}\n")
             log_file.write(f"🔹 Total columns expected: {len(expected_columns)}\n")
-
-        print("🔹 Columns received in API:", df.columns.tolist())
-        print("🔹 Columns expected by model:", expected_columns)
-        print("🔹 Total columns received:", len(df.columns))
-        print("🔹 Total columns expected:", len(expected_columns))
+        
+        # Print logs in Render logs output
+        with open("logs.txt", "r") as log_file:
+            print("\n📌 DEBUG LOGS FROM logs.txt:\n" + log_file.read())
 
         # Apply MinMax Scaling
         df[numerical_features] = scaler.transform(df[numerical_features])
@@ -61,8 +60,6 @@ def predict():
     
     except Exception as e:
         print(f"❌ Error in /predict: {e}")
-        with open("logs.txt", "a") as log_file:
-            log_file.write(f"❌ Error in /predict: {e}\n")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
